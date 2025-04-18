@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Главная</title>
+    <script>
+      async function getHello() {
+        let name = document.getElementById('name').value || 'гость';
+        let response = await fetch(`/api/hello?name=${encodeURIComponent(name)}`);
+        let data = await response.json();
+        document.getElementById('message').innerText = data.message;
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Добро пожаловать!</h1>
+    <p>Введите ваше имя:</p>
+    <input id="name" type="text" placeholder="Имя" />
+    <button onclick="getHello()">Поздороваться</button>
+    <p id="message"></p>
+    <a href="about.html">О нас</a>
+  </body>
+</html>

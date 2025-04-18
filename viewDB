@@ -1,0 +1,16 @@
+
+import sqlite3
+
+def view_database():
+    conn = sqlite3.connect('DataBase.db')
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT * FROM Register')
+    rows = cursor.fetchall()
+    
+    for row in rows:
+        print(row)
+        
+    conn.close()
+
+view_database()

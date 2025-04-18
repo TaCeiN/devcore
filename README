@@ -1,0 +1,32 @@
+# OpenRouter Proxy Configuration
+
+## Proxy Settings
+```python
+{
+    'http': 'http://FJnRFN:o3wguh@94.131.54.28:9058/',
+    'https': 'http://FJnRFN:o3wguh@94.131.54.28:9058/'
+}
+```
+
+## Model Configuration
+- Model Name: `openrouter/optimus-alpha`
+
+## API Configuration
+- API Key: `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`
+- Content Type: `application/json`
+
+## Docker Configuration
+
+### Windows
+1. Создать DockerFile
+2. docker build -t devcore-back-app .
+3. docker save -o devcore-back-app.tar devcore-back-app
+
+### Server
+4. docker load -i devcore.tar
+5. docker images
+6. docker run -d -p 8000:8000 devcore-back-app
+7. docker stop {name}
+
+
+cloudflared tunnel --config "C:\Users\nikol\.cloudflared\config.yml" --no-autoupdate run devcore
