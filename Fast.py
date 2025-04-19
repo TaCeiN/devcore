@@ -1,11 +1,12 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, UploadFile, File
 from trans import transcribe_from_file 
-from maih import transribed_text_kratko
-from DB import first_register, login, restore_password_check_db, restore_password_check_code, restore_password_change_password  
+from DB import *
+from NLM import *
 import os 
+
 
 app = FastAPI()
 
@@ -17,9 +18,6 @@ app.add_middleware(
 )
 
 
-@app.get("/api/hello")
-async def hello(name: str = "гость"):
-    return {"message": f"Привет, {name}!"}
 
 @app.post("/api/audio_transcription")
 async def audio(file: UploadFile = File(...)):
@@ -40,9 +38,10 @@ async def audio(file: UploadFile = File(...)):
     # Удаляем файл после обработки
     os.remove(file_location)
 
-    resume = transribed_text_kratko(transcribed_text)
+    resume = nlm_process(transcribed_text)
 
     return {"filename": filename, "transcribed_text": transcribed_text, "resume": resume}
+
 
 @app.post("/api/register")
 async def register(email: str, password: str):
@@ -81,5 +80,29 @@ async def restore_password_3(email: str, password: str):
         return {"restore_password_3": False}
     
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+@app.post("/api/first_upload")
+async def first_upload(email: str, file: UploadFile = File(...)):
+        # Читаем содержимое файла с правильной кодировкой
+        xml_content = await file.read()
+        xml_content = xml_content.decode('utf-8')
+        
+        # Сохраняем файл в БД
+        if await save_first_upload(email, file.filename, xml_content):
+            return {"first_upload": True, "filename": file.filename}
+        return {"first_upload": False}
+
+
+@app.get("/api/get_file")
+async def get_file(email: str):
+    result = await get_upload_file(email)
+    if result:
+        return result
+    return {"error": "No files found"}
+
+
+@app.post("/api/create_first_bpmn")
+
+@app.get("/", response_class=HTMLResponse)
+async def root():
+    return HTMLResponse(content="<h1>Ошибка: доступ запрещен</h1>", status_code=403)
 

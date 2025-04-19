@@ -2,6 +2,8 @@ import aiosqlite
 import random
 from pass_restore import send_restore_email
 from datetime import datetime, timedelta
+import base64
+
 
 async def first_register(email, password):
     # Подключаемся к базе данных
@@ -93,4 +95,20 @@ async def restore_password_change_password(email, password):
             await cursor.execute('UPDATE Register SET password = ? WHERE email = ?', (password, email))
             await conn.commit()
             return True
-                
+        
+
+async def save_first_upload(email, file_name, contents):
+    async with aiosqlite.connect('DataBase.db') as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute('INSERT INTO Upload (file_name, email, content) VALUES (?, ?, ?)', (file_name, email, contents))
+            await conn.commit()
+            return True
+
+
+async def get_upload_file(email):
+    async with aiosqlite.connect('DataBase.db') as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute('SELECT content, file_name FROM Upload WHERE email = ?', (email,))
+            result = await cursor.fetchall()
+            # Возвращаем содержимое файла и имя файла без кодировки
+            return [(file_name, content) for content, file_name in result]
