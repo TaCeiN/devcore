@@ -97,18 +97,33 @@ async def restore_password_change_password(email, password):
             return True
         
 
-async def save_first_upload(email, file_name, contents):
+async def save_first_upload(email, file_name):
+    # Читаем содержимое template.bpmn
+    with open('template.bpmn', 'r', encoding='utf-8') as template_file:
+        template_content = template_file.read()
+    
     async with aiosqlite.connect('DataBase.db') as conn:
         async with conn.cursor() as cursor:
-            await cursor.execute('INSERT INTO Upload (file_name, email, content) VALUES (?, ?, ?)', (file_name, email, contents))
+            # Сохраняем данные в таблицу Upload
+            await cursor.execute('INSERT INTO Upload (file_name, email, content) VALUES (?, ?, ?)', (file_name, email, template_content))
             await conn.commit()
             return True
 
 
-async def get_upload_file(email):
+async def get_upload_file(email, filename):
     async with aiosqlite.connect('DataBase.db') as conn:
         async with conn.cursor() as cursor:
-            await cursor.execute('SELECT content, file_name FROM Upload WHERE email = ?', (email,))
+            await cursor.execute('SELECT content, file_name FROM Upload WHERE email = ? AND file_name = ?', (email, filename))
             result = await cursor.fetchall()
             # Возвращаем содержимое файла и имя файла без кодировки
             return [(file_name, content) for content, file_name in result]
+        
+async def update_reasoning_in_db(email, filename, reasoning):
+    async with aiosqlite.connect('DataBase.db') as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute(
+                'UPDATE Upload SET content = ? WHERE email = ? AND file_name = ?',
+                (reasoning, email, filename)
+            )
+            await conn.commit()        
+

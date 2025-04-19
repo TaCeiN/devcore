@@ -81,26 +81,39 @@ async def restore_password_3(email: str, password: str):
     
 
 @app.post("/api/first_upload")
-async def first_upload(email: str, file: UploadFile = File(...)):
-        # Читаем содержимое файла с правильной кодировкой
-        xml_content = await file.read()
-        xml_content = xml_content.decode('utf-8')
-        
-        # Сохраняем файл в БД
-        if await save_first_upload(email, file.filename, xml_content):
-            return {"first_upload": True, "filename": file.filename}
-        return {"first_upload": False}
+async def first_upload(email: str, filename: str):
 
+    # Сохраняем информацию о загрузке в базу данных
+    await save_first_upload(email, filename)
+
+    return {"filename": filename, "message": "File uploaded successfully."}
 
 @app.get("/api/get_file")
-async def get_file(email: str):
-    result = await get_upload_file(email)
+async def get_file(email: str, filename: str):
+    result = await get_upload_file(email, filename)
     if result:
         return result
     return {"error": "No files found"}
 
 
-@app.post("/api/create_first_bpmn")
+@app.post("/api/process_file")
+async def process_file(email: str, filename: str, text: str):
+    # Получаем файл из базы данных
+    result = await get_upload_file(email, filename)
+    if result:
+        # Извлекаем имя файла и его содержимое
+        file_name, content = result[0]  # Изменено порядок извлечения
+        reasoning = process_content(content, text)  # Вызываем вашу функцию нейросети
+        
+        # Обновляем reasoning в базе данных
+        await update_reasoning_in_db(email, file_name, reasoning)  # New line added
+        
+        return {
+            "filename": file_name,
+            "reasoning": reasoning,
+        }
+    return {"error": "Файл не найден"}
+
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
