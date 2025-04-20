@@ -1,65 +1,152 @@
 <?xml version="1.0" ?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_UserRegistrationProcess" targetNamespace="http://bpmn.io/schema/bpmn" exporter="BPMN Studio" exporterVersion="1.0.0">
   
   
-  <bpmn:process id="Process_1" isExecutable="false">
+  <bpmn:process id="Process_UserRegistration" isExecutable="false">
     
     
-    <bpmn:startEvent id="StartEvent_1" name="Начало">
+    <bpmn:startEvent id="StartEvent_UserRegistration" name="Регистрация пользователя">
       
       
-      <bpmn:outgoing>Flow_1</bpmn:outgoing>
+      <bpmn:outgoing>Flow_UserRegistrationStart</bpmn:outgoing>
       
     
     </bpmn:startEvent>
     
     
-    <bpmn:userTask id="Task_1" name="Выполнить задание">
+    <bpmn:task id="Task_FillForm" name="Заполнить форму регистрации">
       
       
-      <bpmn:incoming>Flow_1</bpmn:incoming>
+      <bpmn:incoming>Flow_UserRegistrationStart</bpmn:incoming>
       
       
-      <bpmn:outgoing>Flow_2</bpmn:outgoing>
+      <bpmn:outgoing>Flow_FormToValidation</bpmn:outgoing>
       
     
-    </bpmn:userTask>
+    </bpmn:task>
     
     
-    <bpmn:endEvent id="EndEvent_1" name="Конец">
+    <bpmn:task id="Task_ValidateData" name="Проверить данные">
       
       
-      <bpmn:incoming>Flow_2</bpmn:incoming>
+      <bpmn:incoming>Flow_FormToValidation</bpmn:incoming>
+      
+      
+      <bpmn:outgoing>Flow_ValidationToGateway</bpmn:outgoing>
+      
+    
+    </bpmn:task>
+    
+    
+    <bpmn:exclusiveGateway id="Gateway_IsDataValid" name="Данные корректны?">
+      
+      
+      <bpmn:incoming>Flow_ValidationToGateway</bpmn:incoming>
+      
+      
+      <bpmn:outgoing>Flow_DataValid</bpmn:outgoing>
+      
+      
+      <bpmn:outgoing>Flow_DataInvalid</bpmn:outgoing>
+      
+    
+    </bpmn:exclusiveGateway>
+    
+    
+    <bpmn:task id="Task_SaveToDB" name="Сохранить данные в БД">
+      
+      
+      <bpmn:incoming>Flow_DataValid</bpmn:incoming>
+      
+      
+      <bpmn:outgoing>Flow_SaveToComplete</bpmn:outgoing>
+      
+    
+    </bpmn:task>
+    
+    
+    <bpmn:task id="Task_ShowError" name="Показать ошибку валидации">
+      
+      
+      <bpmn:incoming>Flow_DataInvalid</bpmn:incoming>
+      
+      
+      <bpmn:outgoing>Flow_ErrorToEnd</bpmn:outgoing>
+      
+    
+    </bpmn:task>
+    
+    
+    <bpmn:endEvent id="EndEvent_RegistrationComplete" name="Регистрация завершена">
+      
+      
+      <bpmn:incoming>Flow_SaveToComplete</bpmn:incoming>
       
     
     </bpmn:endEvent>
     
     
-    <bpmn:sequenceFlow id="Flow_1" sourceRef="StartEvent_1" targetRef="Task_1"/>
+    <bpmn:endEvent id="EndEvent_ValidationError" name="Ошибка валидации">
+      
+      
+      <bpmn:incoming>Flow_ErrorToEnd</bpmn:incoming>
+      
+    
+    </bpmn:endEvent>
     
     
-    <bpmn:sequenceFlow id="Flow_2" sourceRef="Task_1" targetRef="EndEvent_1"/>
+    <bpmn:sequenceFlow id="Flow_UserRegistrationStart" sourceRef="StartEvent_UserRegistration" targetRef="Task_FillForm"/>
+    
+    
+    <bpmn:sequenceFlow id="Flow_FormToValidation" sourceRef="Task_FillForm" targetRef="Task_ValidateData"/>
+    
+    
+    <bpmn:sequenceFlow id="Flow_ValidationToGateway" sourceRef="Task_ValidateData" targetRef="Gateway_IsDataValid"/>
+    
+    
+    <bpmn:sequenceFlow id="Flow_DataValid" name="Да" sourceRef="Gateway_IsDataValid" targetRef="Task_SaveToDB">
+      
+      
+      <bpmn:conditionExpression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="bpmn:tFormalExpression">${isValid}</bpmn:conditionExpression>
+      
+    
+    </bpmn:sequenceFlow>
+    
+    
+    <bpmn:sequenceFlow id="Flow_DataInvalid" name="Нет" sourceRef="Gateway_IsDataValid" targetRef="Task_ShowError">
+      
+      
+      <bpmn:conditionExpression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="bpmn:tFormalExpression">${!isValid}</bpmn:conditionExpression>
+      
+    
+    </bpmn:sequenceFlow>
+    
+    
+    <bpmn:sequenceFlow id="Flow_SaveToComplete" sourceRef="Task_SaveToDB" targetRef="EndEvent_RegistrationComplete"/>
+    
+    
+    <bpmn:sequenceFlow id="Flow_ErrorToEnd" sourceRef="Task_ShowError" targetRef="EndEvent_ValidationError"/>
     
   
   </bpmn:process>
   
   
-  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+  <bpmndi:BPMNDiagram id="BPMNDiagram_UserRegistration">
     
     
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_UserRegistration" bpmnElement="Process_UserRegistration">
       
       
-      <bpmndi:BPMNShape id="Shape_StartEvent_1" bpmnElement="StartEvent_1">
+      <bpmndi:BPMNShape id="Shape_StartEvent_UserRegistration" bpmnElement="StartEvent_UserRegistration">
         
         
-        <dc:Bounds x="152" y="92" width="36" height="36"/>
+        <dc:Bounds x="102" y="202" width="36" height="36"/>
         
         
         <bpmndi:BPMNLabel>
           
           
-          <dc:Bounds x="150" y="135" width="40" height="14"/>
+          <dc:Bounds x="75" y="245" width="90" height="14"/>
           
         
         </bpmndi:BPMNLabel>
@@ -68,16 +155,34 @@
       </bpmndi:BPMNShape>
       
       
-      <bpmndi:BPMNShape id="Shape_Task_1" bpmnElement="Task_1">
+      <bpmndi:BPMNShape id="Shape_Task_FillForm" bpmnElement="Task_FillForm">
         
         
-        <dc:Bounds x="240" y="70" width="100" height="80"/>
+        <dc:Bounds x="200" y="180" width="100" height="80"/>
+        
+      
+      </bpmndi:BPMNShape>
+      
+      
+      <bpmndi:BPMNShape id="Shape_Task_ValidateData" bpmnElement="Task_ValidateData">
+        
+        
+        <dc:Bounds x="350" y="180" width="100" height="80"/>
+        
+      
+      </bpmndi:BPMNShape>
+      
+      
+      <bpmndi:BPMNShape id="Shape_Gateway_IsDataValid" bpmnElement="Gateway_IsDataValid" isMarkerVisible="true">
+        
+        
+        <dc:Bounds x="505" y="195" width="50" height="50"/>
         
         
         <bpmndi:BPMNLabel>
           
           
-          <dc:Bounds x="251" y="100" width="78" height="14"/>
+          <dc:Bounds x="488" y="165" width="84" height="14"/>
           
         
         </bpmndi:BPMNLabel>
@@ -86,16 +191,34 @@
       </bpmndi:BPMNShape>
       
       
-      <bpmndi:BPMNShape id="Shape_EndEvent_1" bpmnElement="EndEvent_1">
+      <bpmndi:BPMNShape id="Shape_Task_SaveToDB" bpmnElement="Task_SaveToDB">
         
         
-        <dc:Bounds x="402" y="92" width="36" height="36"/>
+        <dc:Bounds x="650" y="150" width="100" height="80"/>
+        
+      
+      </bpmndi:BPMNShape>
+      
+      
+      <bpmndi:BPMNShape id="Shape_Task_ShowError" bpmnElement="Task_ShowError">
+        
+        
+        <dc:Bounds x="650" y="270" width="100" height="80"/>
+        
+      
+      </bpmndi:BPMNShape>
+      
+      
+      <bpmndi:BPMNShape id="Shape_EndEvent_RegistrationComplete" bpmnElement="EndEvent_RegistrationComplete">
+        
+        
+        <dc:Bounds x="802" y="162" width="36" height="36"/>
         
         
         <bpmndi:BPMNLabel>
           
           
-          <dc:Bounds x="404" y="135" width="33" height="14"/>
+          <dc:Bounds x="782" y="205" width="78" height="27"/>
           
         
         </bpmndi:BPMNLabel>
@@ -104,25 +227,127 @@
       </bpmndi:BPMNShape>
       
       
-      <bpmndi:BPMNEdge id="Edge_Flow_1" bpmnElement="Flow_1">
+      <bpmndi:BPMNShape id="Shape_EndEvent_ValidationError" bpmnElement="EndEvent_ValidationError">
         
         
-        <bpmndi:Waypoint x="188" y="110"/>
+        <dc:Bounds x="802" y="282" width="36" height="36"/>
         
         
-        <bpmndi:Waypoint x="240" y="110"/>
+        <bpmndi:BPMNLabel>
+          
+          
+          <dc:Bounds x="785" y="325" width="73" height="27"/>
+          
+        
+        </bpmndi:BPMNLabel>
+        
+      
+      </bpmndi:BPMNShape>
+      
+      
+      <bpmndi:BPMNEdge id="Flow_UserRegistrationStart_di" bpmnElement="Flow_UserRegistrationStart">
+        
+        
+        <di:waypoint x="138" y="220"/>
+        
+        
+        <di:waypoint x="200" y="220"/>
         
       
       </bpmndi:BPMNEdge>
       
       
-      <bpmndi:BPMNEdge id="Edge_Flow_2" bpmnElement="Flow_2">
+      <bpmndi:BPMNEdge id="Flow_FormToValidation_di" bpmnElement="Flow_FormToValidation">
         
         
-        <bpmndi:Waypoint x="340" y="110"/>
+        <di:waypoint x="300" y="220"/>
         
         
-        <bpmndi:Waypoint x="402" y="110"/>
+        <di:waypoint x="350" y="220"/>
+        
+      
+      </bpmndi:BPMNEdge>
+      
+      
+      <bpmndi:BPMNEdge id="Flow_ValidationToGateway_di" bpmnElement="Flow_ValidationToGateway">
+        
+        
+        <di:waypoint x="450" y="220"/>
+        
+        
+        <di:waypoint x="505" y="220"/>
+        
+      
+      </bpmndi:BPMNEdge>
+      
+      
+      <bpmndi:BPMNEdge id="Flow_DataValid_di" bpmnElement="Flow_DataValid">
+        
+        
+        <di:waypoint x="530" y="195"/>
+        
+        
+        <di:waypoint x="530" y="190"/>
+        
+        
+        <di:waypoint x="650" y="190"/>
+        
+        
+        <bpmndi:BPMNLabel>
+          
+          
+          <dc:Bounds x="535" y="183" width="15" height="14"/>
+          
+        
+        </bpmndi:BPMNLabel>
+        
+      
+      </bpmndi:BPMNEdge>
+      
+      
+      <bpmndi:BPMNEdge id="Flow_DataInvalid_di" bpmnElement="Flow_DataInvalid">
+        
+        
+        <di:waypoint x="530" y="245"/>
+        
+        
+        <di:waypoint x="530" y="310"/>
+        
+        
+        <di:waypoint x="650" y="310"/>
+        
+        
+        <bpmndi:BPMNLabel>
+          
+          
+          <dc:Bounds x="533" y="273" width="19" height="14"/>
+          
+        
+        </bpmndi:BPMNLabel>
+        
+      
+      </bpmndi:BPMNEdge>
+      
+      
+      <bpmndi:BPMNEdge id="Flow_SaveToComplete_di" bpmnElement="Flow_SaveToComplete">
+        
+        
+        <di:waypoint x="750" y="190"/>
+        
+        
+        <di:waypoint x="802" y="180"/>
+        
+      
+      </bpmndi:BPMNEdge>
+      
+      
+      <bpmndi:BPMNEdge id="Flow_ErrorToEnd_di" bpmnElement="Flow_ErrorToEnd">
+        
+        
+        <di:waypoint x="750" y="310"/>
+        
+        
+        <di:waypoint x="802" y="300"/>
         
       
       </bpmndi:BPMNEdge>
