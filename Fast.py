@@ -103,15 +103,22 @@ async def process_file(email: str, filename: str, text: str):
     if result:
         # Извлекаем имя файла и его содержимое
         file_name, content = result[0]  # Изменено порядок извлечения
-        reasoning = process_content(content, text)  # Вызываем вашу функцию нейросети
+        
+        # Вызываем вашу функцию нейросети
+        user_response, xml_response = process_content(content, text)
+        
+        if user_response == "No user response found." or xml_response == "No XML response found.":
+            return {"filename": file_name, "user_response": "Unable to process content", "xml": ""}
         
         # Обновляем reasoning в базе данных
-        await update_reasoning_in_db(email, file_name, reasoning)  # New line added
+        await update_reasoning_in_db(email, file_name,xml_response)  # Save user response (if needed)
         
         return {
             "filename": file_name,
-            "reasoning": reasoning,
+            "user_response": user_response,
+            "xml": xml_response,
         }
+    
     return {"error": "Файл не найден"}
 
 
