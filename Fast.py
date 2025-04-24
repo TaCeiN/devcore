@@ -84,9 +84,11 @@ async def restore_password_3(email: str, password: str):
 async def first_upload(email: str, filename: str):
 
     # Сохраняем информацию о загрузке в базу данных
-    await save_first_upload(email, filename)
 
-    return {"filename": filename, "message": "File uploaded successfully."}
+    result =  await save_first_upload(email, filename)
+    if result:
+        return {"filename": filename, "message": "File uploaded successfully."}
+    return {"message:" "Max Files"}
 
 @app.get("/api/get_file")
 async def get_file(email: str, filename: str):
@@ -121,6 +123,58 @@ async def process_file(email: str, filename: str, text: str):
     
     return {"error": "Файл не найден"}
 
+
+@app.get("/api/get_all_files")
+async def get_all_files(email: str):
+    result = await get_all_files_by_email(email)
+    if result:
+        return {"files": result}
+    return {"error": "No files found"}
+
+@app.post("/api/process_audio")
+async def process_audio(email: str, filename: str, file: UploadFile = File(...)):
+    try:
+        # Получаем содержимое файла из базы по email и filename
+        result = await get_upload_file(email, filename)
+        if not result:
+            return {"error": "Файл не найден в базе данных"}
+
+        file_name, content = result[0]
+
+        # Сохраняем загруженный аудиофайл во временную папку
+        temp_dir = "temp"
+        os.makedirs(temp_dir, exist_ok=True)
+        audio_path = os.path.join(temp_dir, file.filename)
+        with open(audio_path, "wb") as f:
+            f.write(await file.read())
+
+        # Транскрибируем аудио
+        transcribed_text = transcribe_from_file(audio_path)
+
+        # Удаляем временный файл
+        os.remove(audio_path)
+
+        # Обрабатываем транскрибированный текст
+        user_response, xml_response = process_content(content, transcribed_text)
+
+        if user_response == "No user response found." or xml_response == "No XML response found.":
+            return {
+                "filename": file_name,
+                "user_response": "Unable to process content",
+                "xml": ""
+            }
+
+        # Обновляем reasoning в базе данных
+        await update_reasoning_in_db(email, file_name, xml_response)
+
+        return {
+            "filename": file_name,
+            "user_response": user_response,
+            "xml": xml_response
+        }
+
+    except Exception as e:
+        return {"error": f"Ошибка при обработке аудио: {str(e)}"}
 
 @app.get("/", response_class=HTMLResponse)
 async def root():

@@ -96,7 +96,6 @@ async def restore_password_change_password(email, password):
             await conn.commit()
             return True
         
-
 async def save_first_upload(email, file_name):
     # Читаем содержимое template.bpmn
     with open('template.bpmn', 'r', encoding='utf-8') as template_file:
@@ -126,4 +125,11 @@ async def update_reasoning_in_db(email, filename, reasoning):
                 (reasoning, email, filename)
             )
             await conn.commit()        
+
+async def get_all_files_by_email(email):
+    async with aiosqlite.connect('DataBase.db') as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute('SELECT file_name FROM Upload WHERE email = ?', (email,))
+            result = await cursor.fetchall()
+            return [row[0] for row in result]
 

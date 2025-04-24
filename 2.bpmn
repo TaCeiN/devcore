@@ -1,362 +1,1689 @@
 <?xml version="1.0" ?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_UserRegistrationProcess" targetNamespace="http://bpmn.io/schema/bpmn" exporter="BPMN Studio" exporterVersion="1.0.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="BPMN Modeler" exporterVersion="5.0.0">
   
+
+
+
+
   
-  <bpmn:process id="Process_UserRegistration" isExecutable="false">
+  <!-- Процесс регистрации пользователя -->
+  
+
+
+  
+  <bpmn:process id="Процесс_РегистрацииПользователяСПроверкойБД" isExecutable="false">
     
+
+
+
+
     
-    <bpmn:startEvent id="StartEvent_UserRegistration" name="Регистрация пользователя">
+    <bpmn:startEvent id="StartEvent_Регистрация" name="Начало регистрации">
       
+
+
+
+
       
-      <bpmn:outgoing>Flow_UserRegistrationStart</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Регистрация_1</bpmn:outgoing>
       
+
+
     
     </bpmn:startEvent>
     
+
+
+
+
     
-    <bpmn:task id="Task_FillForm" name="Заполнить форму регистрации">
+    <bpmn:userTask id="Activity_Регистрация_ВводДанных" name="Ввести данные для регистрации">
       
+
+
+
+
       
-      <bpmn:incoming>Flow_UserRegistrationStart</bpmn:incoming>
+      <bpmn:incoming>Flow_Регистрация_1</bpmn:incoming>
       
+
+
+
+
       
-      <bpmn:outgoing>Flow_FormToValidation</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Регистрация_2</bpmn:outgoing>
       
+
+
     
-    </bpmn:task>
+    </bpmn:userTask>
     
+
+
+
+
     
-    <bpmn:task id="Task_ValidateData" name="Проверить данные">
+    <bpmn:serviceTask id="Activity_Регистрация_ПроверкаБД" name="Проверить существование пользователя в БД">
       
+
+
+
+
       
-      <bpmn:incoming>Flow_FormToValidation</bpmn:incoming>
+      <bpmn:incoming>Flow_Регистрация_2</bpmn:incoming>
       
+
+
+
+
       
-      <bpmn:outgoing>Flow_ValidationToGateway</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Регистрация_3</bpmn:outgoing>
       
+
+
     
-    </bpmn:task>
+    </bpmn:serviceTask>
     
+
+
+
+
     
-    <bpmn:exclusiveGateway id="Gateway_IsDataValid" name="Данные корректны?">
+    <bpmn:exclusiveGateway id="Gateway_Регистрация_Существует" name="Пользователь существует?">
       
+
+
+
+
       
-      <bpmn:incoming>Flow_ValidationToGateway</bpmn:incoming>
+      <bpmn:incoming>Flow_Регистрация_3</bpmn:incoming>
       
+
+
+
+
       
-      <bpmn:outgoing>Flow_DataValid</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Регистрация_4</bpmn:outgoing>
       
+
+
+
+
       
-      <bpmn:outgoing>Flow_DataInvalid</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Регистрация_5</bpmn:outgoing>
       
+
+
     
     </bpmn:exclusiveGateway>
     
+
+
+
+
     
-    <bpmn:task id="Task_SaveToDB" name="Сохранить данные в БД">
+    <bpmn:task id="Activity_Регистрация_УведомитьСуществует" name="Уведомить пользователя: уже зарегистрирован">
       
+
+
+
+
       
-      <bpmn:incoming>Flow_DataValid</bpmn:incoming>
+      <bpmn:incoming>Flow_Регистрация_4</bpmn:incoming>
       
+
+
+
+
       
-      <bpmn:outgoing>Flow_SaveToComplete</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Регистрация_6</bpmn:outgoing>
       
+
+
     
     </bpmn:task>
     
+
+
+
+
     
-    <bpmn:task id="Task_ShowError" name="Показать ошибку валидации">
+    <bpmn:serviceTask id="Activity_Регистрация_СохранитьБД" name="Сохранить данные пользователя в БД">
       
+
+
+
+
       
-      <bpmn:incoming>Flow_DataInvalid</bpmn:incoming>
+      <bpmn:incoming>Flow_Регистрация_5</bpmn:incoming>
       
+
+
+
+
       
-      <bpmn:outgoing>Flow_ErrorToEnd</bpmn:outgoing>
+      <bpmn:outgoing>Flow_Регистрация_7</bpmn:outgoing>
       
+
+
     
-    </bpmn:task>
+    </bpmn:serviceTask>
     
+
+
+
+
     
-    <bpmn:endEvent id="EndEvent_RegistrationComplete" name="Регистрация завершена">
+    <bpmn:endEvent id="EndEvent_Регистрация" name="Регистрация завершена">
       
+
+
+
+
       
-      <bpmn:incoming>Flow_SaveToComplete</bpmn:incoming>
+      <bpmn:incoming>Flow_Регистрация_6</bpmn:incoming>
       
+
+
+
+
+      
+      <bpmn:incoming>Flow_Регистрация_7</bpmn:incoming>
+      
+
+
     
     </bpmn:endEvent>
     
+
+
+
+
     
-    <bpmn:endEvent id="EndEvent_ValidationError" name="Ошибка валидации">
+    <bpmn:sequenceFlow id="Flow_Регистрация_1" sourceRef="StartEvent_Регистрация" targetRef="Activity_Регистрация_ВводДанных"/>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Регистрация_2" sourceRef="Activity_Регистрация_ВводДанных" targetRef="Activity_Регистрация_ПроверкаБД"/>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Регистрация_3" sourceRef="Activity_Регистрация_ПроверкаБД" targetRef="Gateway_Регистрация_Существует"/>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Регистрация_4" sourceRef="Gateway_Регистрация_Существует" targetRef="Activity_Регистрация_УведомитьСуществует" name="Да (существует)">
       
+
+
+
+
       
-      <bpmn:incoming>Flow_ErrorToEnd</bpmn:incoming>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${userExists == true}</bpmn:conditionExpression>
       
-    
-    </bpmn:endEvent>
-    
-    
-    <bpmn:sequenceFlow id="Flow_UserRegistrationStart" sourceRef="StartEvent_UserRegistration" targetRef="Task_FillForm"/>
-    
-    
-    <bpmn:sequenceFlow id="Flow_FormToValidation" sourceRef="Task_FillForm" targetRef="Task_ValidateData"/>
-    
-    
-    <bpmn:sequenceFlow id="Flow_ValidationToGateway" sourceRef="Task_ValidateData" targetRef="Gateway_IsDataValid"/>
-    
-    
-    <bpmn:sequenceFlow id="Flow_DataValid" name="Да" sourceRef="Gateway_IsDataValid" targetRef="Task_SaveToDB">
-      
-      
-      <bpmn:conditionExpression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="bpmn:tFormalExpression">${isValid}</bpmn:conditionExpression>
-      
+
+
     
     </bpmn:sequenceFlow>
     
+
+
+
+
     
-    <bpmn:sequenceFlow id="Flow_DataInvalid" name="Нет" sourceRef="Gateway_IsDataValid" targetRef="Task_ShowError">
+    <bpmn:sequenceFlow id="Flow_Регистрация_5" sourceRef="Gateway_Регистрация_Существует" targetRef="Activity_Регистрация_СохранитьБД" name="Нет (не существует)">
       
+
+
+
+
       
-      <bpmn:conditionExpression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="bpmn:tFormalExpression">${!isValid}</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${userExists == false}</bpmn:conditionExpression>
       
+
+
     
     </bpmn:sequenceFlow>
     
+
+
+
+
     
-    <bpmn:sequenceFlow id="Flow_SaveToComplete" sourceRef="Task_SaveToDB" targetRef="EndEvent_RegistrationComplete"/>
+    <bpmn:sequenceFlow id="Flow_Регистрация_6" sourceRef="Activity_Регистрация_УведомитьСуществует" targetRef="EndEvent_Регистрация"/>
     
+
+
+
+
     
-    <bpmn:sequenceFlow id="Flow_ErrorToEnd" sourceRef="Task_ShowError" targetRef="EndEvent_ValidationError"/>
+    <bpmn:sequenceFlow id="Flow_Регистрация_7" sourceRef="Activity_Регистрация_СохранитьБД" targetRef="EndEvent_Регистрация"/>
     
+
+
   
   </bpmn:process>
   
+
+
+
+
   
-  <bpmndi:BPMNDiagram id="BPMNDiagram_UserRegistration">
+  <!-- Процесс авторизации пользователя -->
+  
+
+
+  
+  <bpmn:process id="Процесс_АвторизацииПользователяСПроверкойБД" isExecutable="false">
     
+
+
+
+
     
-    <bpmndi:BPMNPlane id="BPMNPlane_UserRegistration" bpmnElement="Process_UserRegistration">
+    <bpmn:startEvent id="StartEvent_Авторизация" name="Начало авторизации">
       
+
+
+
+
       
-      <bpmndi:BPMNShape id="Shape_StartEvent_UserRegistration" bpmnElement="StartEvent_UserRegistration">
+      <bpmn:outgoing>Flow_Авторизация_1</bpmn:outgoing>
+      
+
+
+    
+    </bpmn:startEvent>
+    
+
+
+
+
+    
+    <bpmn:userTask id="Activity_Авторизация_ВводДанных" name="Ввести учетные данные">
+      
+
+
+
+
+      
+      <bpmn:incoming>Flow_Авторизация_1</bpmn:incoming>
+      
+
+
+
+
+      
+      <bpmn:outgoing>Flow_Авторизация_2</bpmn:outgoing>
+      
+
+
+    
+    </bpmn:userTask>
+    
+
+
+
+
+    
+    <bpmn:serviceTask id="Activity_Авторизация_ПроверкаБД" name="Проверить учетные данные в БД">
+      
+
+
+
+
+      
+      <bpmn:incoming>Flow_Авторизация_2</bpmn:incoming>
+      
+
+
+
+
+      
+      <bpmn:outgoing>Flow_Авторизация_3</bpmn:outgoing>
+      
+
+
+    
+    </bpmn:serviceTask>
+    
+
+
+
+
+    
+    <bpmn:exclusiveGateway id="Gateway_Авторизация_Верны" name="Учетные данные верны?">
+      
+
+
+
+
+      
+      <bpmn:incoming>Flow_Авторизация_3</bpmn:incoming>
+      
+
+
+
+
+      
+      <bpmn:outgoing>Flow_Авторизация_4</bpmn:outgoing>
+      
+
+
+
+
+      
+      <bpmn:outgoing>Flow_Авторизация_5</bpmn:outgoing>
+      
+
+
+    
+    </bpmn:exclusiveGateway>
+    
+
+
+
+
+    
+    <bpmn:task id="Activity_Авторизация_Успех" name="Авторизация успешна">
+      
+
+
+
+
+      
+      <bpmn:incoming>Flow_Авторизация_4</bpmn:incoming>
+      
+
+
+
+
+      
+      <bpmn:outgoing>Flow_Авторизация_6</bpmn:outgoing>
+      
+
+
+    
+    </bpmn:task>
+    
+
+
+
+
+    
+    <bpmn:task id="Activity_Авторизация_Ошибка" name="Уведомить пользователя: ошибка авторизации">
+      
+
+
+
+
+      
+      <bpmn:incoming>Flow_Авторизация_5</bpmn:incoming>
+      
+
+
+
+
+      
+      <bpmn:outgoing>Flow_Авторизация_7</bpmn:outgoing>
+      
+
+
+    
+    </bpmn:task>
+    
+
+
+
+
+    
+    <bpmn:endEvent id="EndEvent_Авторизация" name="Авторизация завершена">
+      
+
+
+
+
+      
+      <bpmn:incoming>Flow_Авторизация_6</bpmn:incoming>
+      
+
+
+
+
+      
+      <bpmn:incoming>Flow_Авторизация_7</bpmn:incoming>
+      
+
+
+    
+    </bpmn:endEvent>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Авторизация_1" sourceRef="StartEvent_Авторизация" targetRef="Activity_Авторизация_ВводДанных"/>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Авторизация_2" sourceRef="Activity_Авторизация_ВводДанных" targetRef="Activity_Авторизация_ПроверкаБД"/>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Авторизация_3" sourceRef="Activity_Авторизация_ПроверкаБД" targetRef="Gateway_Авторизация_Верны"/>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Авторизация_4" sourceRef="Gateway_Авторизация_Верны" targetRef="Activity_Авторизация_Успех" name="Да (верны)">
+      
+
+
+
+
+      
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${credentialsValid == true}</bpmn:conditionExpression>
+      
+
+
+    
+    </bpmn:sequenceFlow>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Авторизация_5" sourceRef="Gateway_Авторизация_Верны" targetRef="Activity_Авторизация_Ошибка" name="Нет (не верны)">
+      
+
+
+
+
+      
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">${credentialsValid == false}</bpmn:conditionExpression>
+      
+
+
+    
+    </bpmn:sequenceFlow>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Авторизация_6" sourceRef="Activity_Авторизация_Успех" targetRef="EndEvent_Авторизация"/>
+    
+
+
+
+
+    
+    <bpmn:sequenceFlow id="Flow_Авторизация_7" sourceRef="Activity_Авторизация_Ошибка" targetRef="EndEvent_Авторизация"/>
+    
+
+
+  
+  </bpmn:process>
+  
+
+
+
+
+  
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    
+
+
+
+
+    
+    <!-- Диаграмма для процесса регистрации -->
+    
+
+
+    
+    <bpmndi:BPMNPlane id="BPMNPlane_Регистрация" bpmnElement="Процесс_РегистрацииПользователяСПроверкойБД">
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_StartEvent_Регистрация" bpmnElement="StartEvent_Регистрация">
         
+
+
+
+
         
-        <dc:Bounds x="102" y="202" width="36" height="36"/>
+        <dc:Bounds x="152" y="152" width="36" height="36"/>
         
+
+
+
+
         
         <bpmndi:BPMNLabel>
           
+
+
+
+
           
-          <dc:Bounds x="75" y="245" width="90" height="14"/>
+          <dc:Bounds x="120" y="195" width="100" height="14"/>
           
+
+
         
         </bpmndi:BPMNLabel>
         
+
+
       
       </bpmndi:BPMNShape>
       
+
+
+
+
       
-      <bpmndi:BPMNShape id="Shape_Task_FillForm" bpmnElement="Task_FillForm">
+      <bpmndi:BPMNShape id="BPMNShape_Activity_Регистрация_ВводДанных" bpmnElement="Activity_Регистрация_ВводДанных">
         
+
+
+
+
         
-        <dc:Bounds x="200" y="180" width="100" height="80"/>
+        <dc:Bounds x="250" y="130" width="100" height="80"/>
         
-      
-      </bpmndi:BPMNShape>
-      
-      
-      <bpmndi:BPMNShape id="Shape_Task_ValidateData" bpmnElement="Task_ValidateData">
-        
-        
-        <dc:Bounds x="350" y="180" width="100" height="80"/>
-        
-      
-      </bpmndi:BPMNShape>
-      
-      
-      <bpmndi:BPMNShape id="Shape_Gateway_IsDataValid" bpmnElement="Gateway_IsDataValid" isMarkerVisible="true">
-        
-        
-        <dc:Bounds x="505" y="195" width="50" height="50"/>
-        
+
+
+
+
         
         <bpmndi:BPMNLabel>
           
+
+
+
+
           
-          <dc:Bounds x="488" y="165" width="84" height="14"/>
+          <dc:Bounds x="255" y="145" width="90" height="40"/>
           
+
+
         
         </bpmndi:BPMNLabel>
         
+
+
       
       </bpmndi:BPMNShape>
       
+
+
+
+
       
-      <bpmndi:BPMNShape id="Shape_Task_SaveToDB" bpmnElement="Task_SaveToDB">
+      <bpmndi:BPMNShape id="BPMNShape_Activity_Регистрация_ПроверкаБД" bpmnElement="Activity_Регистрация_ПроверкаБД">
         
+
+
+
+
         
-        <dc:Bounds x="650" y="150" width="100" height="80"/>
+        <dc:Bounds x="400" y="130" width="100" height="80"/>
         
-      
-      </bpmndi:BPMNShape>
-      
-      
-      <bpmndi:BPMNShape id="Shape_Task_ShowError" bpmnElement="Task_ShowError">
-        
-        
-        <dc:Bounds x="650" y="270" width="100" height="80"/>
-        
-      
-      </bpmndi:BPMNShape>
-      
-      
-      <bpmndi:BPMNShape id="Shape_EndEvent_RegistrationComplete" bpmnElement="EndEvent_RegistrationComplete">
-        
-        
-        <dc:Bounds x="802" y="162" width="36" height="36"/>
-        
+
+
+
+
         
         <bpmndi:BPMNLabel>
           
+
+
+
+
           
-          <dc:Bounds x="782" y="205" width="78" height="27"/>
+          <dc:Bounds x="405" y="145" width="90" height="40"/>
           
+
+
         
         </bpmndi:BPMNLabel>
         
+
+
       
       </bpmndi:BPMNShape>
       
+
+
+
+
       
-      <bpmndi:BPMNShape id="Shape_EndEvent_ValidationError" bpmnElement="EndEvent_ValidationError">
+      <bpmndi:BPMNShape id="BPMNShape_Gateway_Регистрация_Существует" bpmnElement="Gateway_Регистрация_Существует" isMarkerVisible="true">
         
+
+
+
+
         
-        <dc:Bounds x="802" y="282" width="36" height="36"/>
+        <dc:Bounds x="540" y="145" width="50" height="50"/>
         
+
+
+
+
         
         <bpmndi:BPMNLabel>
           
+
+
+
+
           
-          <dc:Bounds x="785" y="325" width="73" height="27"/>
+          <dc:Bounds x="510" y="115" width="110" height="14"/>
           
+
+
         
         </bpmndi:BPMNLabel>
         
+
+
       
       </bpmndi:BPMNShape>
       
+
+
+
+
       
-      <bpmndi:BPMNEdge id="Flow_UserRegistrationStart_di" bpmnElement="Flow_UserRegistrationStart">
+      <bpmndi:BPMNShape id="BPMNShape_Activity_Регистрация_УведомитьСуществует" bpmnElement="Activity_Регистрация_УведомитьСуществует">
         
+
+
+
+
         
-        <di:waypoint x="138" y="220"/>
+        <dc:Bounds x="680" y="60" width="100" height="80"/>
         
-        
-        <di:waypoint x="200" y="220"/>
-        
-      
-      </bpmndi:BPMNEdge>
-      
-      
-      <bpmndi:BPMNEdge id="Flow_FormToValidation_di" bpmnElement="Flow_FormToValidation">
-        
-        
-        <di:waypoint x="300" y="220"/>
-        
-        
-        <di:waypoint x="350" y="220"/>
-        
-      
-      </bpmndi:BPMNEdge>
-      
-      
-      <bpmndi:BPMNEdge id="Flow_ValidationToGateway_di" bpmnElement="Flow_ValidationToGateway">
-        
-        
-        <di:waypoint x="450" y="220"/>
-        
-        
-        <di:waypoint x="505" y="220"/>
-        
-      
-      </bpmndi:BPMNEdge>
-      
-      
-      <bpmndi:BPMNEdge id="Flow_DataValid_di" bpmnElement="Flow_DataValid">
-        
-        
-        <di:waypoint x="530" y="195"/>
-        
-        
-        <di:waypoint x="530" y="190"/>
-        
-        
-        <di:waypoint x="650" y="190"/>
-        
+
+
+
+
         
         <bpmndi:BPMNLabel>
           
+
+
+
+
           
-          <dc:Bounds x="535" y="183" width="15" height="14"/>
+          <dc:Bounds x="685" y="75" width="90" height="40"/>
           
+
+
         
         </bpmndi:BPMNLabel>
         
+
+
       
-      </bpmndi:BPMNEdge>
+      </bpmndi:BPMNShape>
       
+
+
+
+
       
-      <bpmndi:BPMNEdge id="Flow_DataInvalid_di" bpmnElement="Flow_DataInvalid">
+      <bpmndi:BPMNShape id="BPMNShape_Activity_Регистрация_СохранитьБД" bpmnElement="Activity_Регистрация_СохранитьБД">
         
+
+
+
+
         
-        <di:waypoint x="530" y="245"/>
+        <dc:Bounds x="680" y="220" width="100" height="80"/>
         
-        
-        <di:waypoint x="530" y="310"/>
-        
-        
-        <di:waypoint x="650" y="310"/>
-        
+
+
+
+
         
         <bpmndi:BPMNLabel>
           
+
+
+
+
           
-          <dc:Bounds x="533" y="273" width="19" height="14"/>
+          <dc:Bounds x="685" y="235" width="90" height="40"/>
           
+
+
         
         </bpmndi:BPMNLabel>
         
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_EndEvent_Регистрация" bpmnElement="EndEvent_Регистрация">
+        
+
+
+
+
+        
+        <dc:Bounds x="872" y="152" width="36" height="36"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="849" y="195" width="83" height="27"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Регистрация_1" bpmnElement="Flow_Регистрация_1">
+        
+
+
+
+
+        
+        <di:waypoint x="188" y="170"/>
+        
+
+
+
+
+        
+        <di:waypoint x="250" y="170"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel/>
+        
+
+
       
       </bpmndi:BPMNEdge>
       
+
+
+
+
       
-      <bpmndi:BPMNEdge id="Flow_SaveToComplete_di" bpmnElement="Flow_SaveToComplete">
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Регистрация_2" bpmnElement="Flow_Регистрация_2">
         
+
+
+
+
         
-        <di:waypoint x="750" y="190"/>
+        <di:waypoint x="350" y="170"/>
         
+
+
+
+
         
-        <di:waypoint x="802" y="180"/>
+        <di:waypoint x="400" y="170"/>
         
+
+
+
+
+        
+        <bpmndi:BPMNLabel/>
+        
+
+
       
       </bpmndi:BPMNEdge>
       
+
+
+
+
       
-      <bpmndi:BPMNEdge id="Flow_ErrorToEnd_di" bpmnElement="Flow_ErrorToEnd">
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Регистрация_3" bpmnElement="Flow_Регистрация_3">
         
+
+
+
+
         
-        <di:waypoint x="750" y="310"/>
+        <di:waypoint x="500" y="170"/>
         
+
+
+
+
         
-        <di:waypoint x="802" y="300"/>
+        <di:waypoint x="540" y="170"/>
         
+
+
+
+
+        
+        <bpmndi:BPMNLabel/>
+        
+
+
       
       </bpmndi:BPMNEdge>
       
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Регистрация_4" bpmnElement="Flow_Регистрация_4">
+        
+
+
+
+
+        
+        <di:waypoint x="565" y="145"/>
+        
+
+
+
+
+        
+        <di:waypoint x="565" y="100"/>
+        
+
+
+
+
+        
+        <di:waypoint x="680" y="100"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="570" y="73" width="65" height="14"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Регистрация_5" bpmnElement="Flow_Регистрация_5">
+        
+
+
+
+
+        
+        <di:waypoint x="565" y="195"/>
+        
+
+
+
+
+        
+        <di:waypoint x="565" y="260"/>
+        
+
+
+
+
+        
+        <di:waypoint x="680" y="260"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="565" y="267" width="105" height="14"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Регистрация_6" bpmnElement="Flow_Регистрация_6">
+        
+
+
+
+
+        
+        <di:waypoint x="780" y="100"/>
+        
+
+
+
+
+        
+        <di:waypoint x="826" y="100"/>
+        
+
+
+
+
+        
+        <di:waypoint x="826" y="170"/>
+        
+
+
+
+
+        
+        <di:waypoint x="872" y="170"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel/>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Регистрация_7" bpmnElement="Flow_Регистрация_7">
+        
+
+
+
+
+        
+        <di:waypoint x="780" y="260"/>
+        
+
+
+
+
+        
+        <di:waypoint x="826" y="260"/>
+        
+
+
+
+
+        
+        <di:waypoint x="826" y="170"/>
+        
+
+
+
+
+        
+        <di:waypoint x="872" y="170"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel/>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
     
     </bpmndi:BPMNPlane>
     
+
+
+
+
+    
+    <!-- Диаграмма для процесса авторизации -->
+    
+
+
+    
+    <bpmndi:BPMNPlane id="BPMNPlane_Авторизация" bpmnElement="Процесс_АвторизацииПользователяСПроверкойБД">
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_StartEvent_Авторизация" bpmnElement="StartEvent_Авторизация">
+        
+
+
+
+
+        
+        <dc:Bounds x="152" y="452" width="36" height="36"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="120" y="495" width="100" height="14"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_Activity_Авторизация_ВводДанных" bpmnElement="Activity_Авторизация_ВводДанных">
+        
+
+
+
+
+        
+        <dc:Bounds x="250" y="430" width="100" height="80"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="255" y="445" width="90" height="40"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_Activity_Авторизация_ПроверкаБД" bpmnElement="Activity_Авторизация_ПроверкаБД">
+        
+
+
+
+
+        
+        <dc:Bounds x="400" y="430" width="100" height="80"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="405" y="445" width="90" height="40"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_Gateway_Авторизация_Верны" bpmnElement="Gateway_Авторизация_Верны" isMarkerVisible="true">
+        
+
+
+
+
+        
+        <dc:Bounds x="540" y="445" width="50" height="50"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="510" y="415" width="110" height="14"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_Activity_Авторизация_Успех" bpmnElement="Activity_Авторизация_Успех">
+        
+
+
+
+
+        
+        <dc:Bounds x="680" y="360" width="100" height="80"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="685" y="375" width="90" height="40"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_Activity_Авторизация_Ошибка" bpmnElement="Activity_Авторизация_Ошибка">
+        
+
+
+
+
+        
+        <dc:Bounds x="680" y="520" width="100" height="80"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="685" y="535" width="90" height="40"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNShape id="BPMNShape_EndEvent_Авторизация" bpmnElement="EndEvent_Авторизация">
+        
+
+
+
+
+        
+        <dc:Bounds x="872" y="452" width="36" height="36"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="849" y="495" width="83" height="27"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNShape>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Авторизация_1" bpmnElement="Flow_Авторизация_1">
+        
+
+
+
+
+        
+        <di:waypoint x="188" y="470"/>
+        
+
+
+
+
+        
+        <di:waypoint x="250" y="470"/>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Авторизация_2" bpmnElement="Flow_Авторизация_2">
+        
+
+
+
+
+        
+        <di:waypoint x="350" y="470"/>
+        
+
+
+
+
+        
+        <di:waypoint x="400" y="470"/>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Авторизация_3" bpmnElement="Flow_Авторизация_3">
+        
+
+
+
+
+        
+        <di:waypoint x="500" y="470"/>
+        
+
+
+
+
+        
+        <di:waypoint x="540" y="470"/>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Авторизация_4" bpmnElement="Flow_Авторизация_4">
+        
+
+
+
+
+        
+        <di:waypoint x="565" y="445"/>
+        
+
+
+
+
+        
+        <di:waypoint x="565" y="400"/>
+        
+
+
+
+
+        
+        <di:waypoint x="680" y="400"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="570" y="373" width="65" height="14"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Авторизация_5" bpmnElement="Flow_Авторизация_5">
+        
+
+
+
+
+        
+        <di:waypoint x="565" y="495"/>
+        
+
+
+
+
+        
+        <di:waypoint x="565" y="560"/>
+        
+
+
+
+
+        
+        <di:waypoint x="680" y="560"/>
+        
+
+
+
+
+        
+        <bpmndi:BPMNLabel>
+          
+
+
+
+
+          
+          <dc:Bounds x="565" y="567" width="105" height="14"/>
+          
+
+
+        
+        </bpmndi:BPMNLabel>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Авторизация_6" bpmnElement="Flow_Авторизация_6">
+        
+
+
+
+
+        
+        <di:waypoint x="780" y="400"/>
+        
+
+
+
+
+        
+        <di:waypoint x="826" y="400"/>
+        
+
+
+
+
+        
+        <di:waypoint x="826" y="470"/>
+        
+
+
+
+
+        
+        <di:waypoint x="872" y="470"/>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+
+
+      
+      <bpmndi:BPMNEdge id="BPMNEdge_Flow_Авторизация_7" bpmnElement="Flow_Авторизация_7">
+        
+
+
+
+
+        
+        <di:waypoint x="780" y="560"/>
+        
+
+
+
+
+        
+        <di:waypoint x="826" y="560"/>
+        
+
+
+
+
+        
+        <di:waypoint x="826" y="470"/>
+        
+
+
+
+
+        
+        <di:waypoint x="872" y="470"/>
+        
+
+
+      
+      </bpmndi:BPMNEdge>
+      
+
+
+    
+    </bpmndi:BPMNPlane>
+    
+
+
   
   </bpmndi:BPMNDiagram>
   
+
+
+
 
 </bpmn:definitions>
